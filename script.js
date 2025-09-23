@@ -1,6 +1,6 @@
 // Initialize AOS animations
 AOS.init({ duration: 1000 });
-
+console.log("works")
 // DOM elements
 const decodeBtn = document.getElementById("decodeBtn");
 const fileInput = document.getElementById("fileInput");
@@ -10,22 +10,43 @@ const designResult = document.getElementById("designResult");
 const customBtn = document.getElementById("customBtn");
 const questionContainer = document.getElementById("questionContainer");
 
-const randomImages = [
-  "https://tse4.mm.bing.net/th/id/OIP.k-vgblw1Yey6qLY9PRR-ZgHaF7",
-  "https://tse3.mm.bing.net/th/id/OIP._guf6PCDE6KTvsJWddHd7QHaE8",
-  "https://cdn.apartmenttherapy.info/image/upload/v1654542441/at/designablehome.jpg"
-];
+// Predefined static images mapped to style preferences (12 images, 4 per style)
+const styleImages = {
+  modern: [
+    "images/landscape1.jpeg", // Modern outdoor patio
+    "images/landscape2.jpeg", // Modern balcony
+    "images/landscape3.jpeg", // Modern garden
+    "images/landscape4.jpeg" // Modern furniture setup
+  ],
+  rustic: [
+    "images/landscape5.jpeg", // Rustic garden
+    "images/landscape6.jpeg", // Rustic patio
+    "images/landscape7.jpeg", // Rustic outdoor seating
+    "images/landscape8.jpeg" // Rustic backyard
+  ],
+  classic: [
+    "images/landscape9.jpeg", // Classic garden
+    "images/landscape10.jpeg", // Classic outdoor space
+    "images/landscape11.jpeg", // Classic patio
+    "images/landscape12.jpeg" // Classic furniture setup
+  ]
+};
 
-const fallbackImage = "https://images.pexels.com/photos/186077/pexels-photo-186077.jpeg";
+const fallbackImage = "./images/landscape12.jpeg";
 let lastUsedImage = null;
 
-// Generate random image URL, avoiding the last used image
-function getRandomImageUrl() {
-  const availableImages = randomImages.filter(url => url !== lastUsedImage);
-  const imagePool = availableImages.length > 0 ? availableImages : randomImages;
-  const selectedUrl = imagePool[Math.floor(Math.random() * imagePool.length)];
-  lastUsedImage = selectedUrl;
-  return selectedUrl + "?t=" + new Date().getTime();
+// Generate random image from static styleImages based on style preference
+function getRandomImage(stylePref = "modern") {
+  // Use the user's selected style or default to "modern"
+  const imagePool = styleImages[stylePref] || styleImages.modern;
+  // Filter out the last used image to avoid repetition
+  const availableImages = imagePool.filter(image => image !== lastUsedImage);
+  const selectedImages = availableImages.length > 0 ? availableImages : imagePool;
+  // Select a random image from the available pool
+  const selectedImage = selectedImages[Math.floor(Math.random() * selectedImages.length)] || fallbackImage;
+  console.log("dfghjk"+selectedImage)
+  lastUsedImage = selectedImage;
+  return selectedImage;
 }
 
 // Pricing data
@@ -44,11 +65,26 @@ decodeBtn.addEventListener("click", () => fileInput.click());
 
 // Handle file upload
 fileInput.addEventListener("change", (event) => {
-  const file = event.target.files[0];
+  const file = event.target.files[3];
   if (file) {
+    // Validate file type (only images)
+    if (!file.type.startsWith("image/")) {
+      const alertDiv = document.createElement("div");
+      alertDiv.className = "alert alert-warning alert-dismissible fade show";
+      alertDiv.role = "alert";
+      alertDiv.innerHTML = `
+        Please upload a valid image file (JPEG, PNG, etc.)
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      designResult.prepend(alertDiv);
+      return;
+    }
     const imageUrl = URL.createObjectURL(file);
     sampleImage.src = imageUrl;
     generateBtn.classList.remove("d-none"); // Use Bootstrap's display utility
+    sampleImage.onerror = () => {
+      sampleImage.src = fallbackImage; // Fallback if uploaded image fails
+    };
     sampleImage.onload = () => URL.revokeObjectURL(imageUrl);
   }
 });
@@ -69,7 +105,7 @@ generateBtn.addEventListener("click", () => {
   designResult.appendChild(ul);
   const total = document.createElement("p");
   total.className = "total-cost mt-3"; // Bootstrap margin utility
-  total.textContent = `Total: $${totalCost} / ₹${(totalCost * exchangeRate).toFixed(2)}`;
+  totalCost.textContent = `Total: $${totalCost} / ₹${(totalCost * exchangeRate).toFixed(2)}`;
   designResult.appendChild(total);
   // Trigger AOS refresh for dynamic content
   AOS.refresh();
@@ -97,7 +133,7 @@ function showQuestion() {
     return;
   }
   const q = questions[currentQ];
-  questionContainer.classList.add("active");
+  questionContainer.className = "question-container mt-4 active"; // Ensure Bootstrap classes
   questionContainer.innerHTML = `
     <p class="mb-2">${q.question}</p>
     <select class="form-select mb-3" aria-label="Select ${q.key}">
@@ -111,7 +147,14 @@ function showQuestion() {
   nextBtn.onclick = () => {
     const select = questionContainer.querySelector("select");
     if (!select.value) {
-      alert("Please select an option");
+      const alertDiv = document.createElement("div");
+      alertDiv.className = "alert alert-warning alert-dismissible fade show";
+      alertDiv.role = "alert";
+      alertDiv.innerHTML = `
+        Please select an option
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      `;
+      questionContainer.prepend(alertDiv);
       return;
     }
     answers[q.key] = select.value;
@@ -141,7 +184,14 @@ function showResults() {
   totalCost.className = "total-cost mt-3"; // Bootstrap margin utility
   totalCost.textContent = `Total: $${total} / ₹${(total * exchangeRate).toFixed(2)}`;
   designResult.appendChild(totalCost);
-  sampleImage.src = getRandomImageUrl();
+  // Select random image based on stylePref, default to "modern"
+  const selectedStyle = answers.stylePref || "modern";
+  const selectedImage = getRandomImage(selectedStyle);
+  console.log("king")
+  sampleImage.src = selectedImage;
+  sampleImage.onerror = () => {
+    sampleImage.src = fallbackImage; // Fallback if selected image fails
+  };
   // Trigger AOS refresh for dynamic content
   AOS.refresh();
 }
