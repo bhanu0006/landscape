@@ -16,6 +16,10 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="style.css">
+  
+  <!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
+
 </head>
 <body>
   <!-- Navbar -->
@@ -44,24 +48,112 @@
     </div>
   </nav>
 
-  <!-- Hero Section -->
-  <header id="hero" class="py-5 text-center">
-    <div class="container">
-      <h1 class="display-3">Beautiful Outdoor Living</h1>
-      <p class="lead">Balconies, gardens & outdoor spaces designed with care 🌿</p>
-      <img id="sampleImage" src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Sample balcony with modern outdoor design" class="img-fluid rounded-3 mb-4">
-      <div class="hero-buttons">
-        <div class="btn-container d-flex flex-column flex-md-row justify-content-center gap-3 mb-3">
-          <button id="decodeBtn" class="btn btn-success" aria-label="Decode your design">Decode Design</button>
-          <button id="customBtn" class="btn btn-success" aria-label="Start custom design">Custom Design</button>
-          <input type="file" id="fileInput" accept="image/*" hidden aria-label="Upload image file">
-        </div>
-        <button id="generateBtn" class="btn generate-btn" aria-label="Generate random design">Generate</button>
+<!-- Hero Section -->
+<header id="hero" class="hero-section">
+  <div class="overlay"></div>
+  <div class="container text-center hero-content">
+    <h1 class="display-3">Bringing Nature Closer</h1>
+    <p class="lead">Transform your outdoors into a masterpiece of elegance, style, beauty 🌿</p>
+    <div class="hero-buttons mt-4">
+      <div class="btn-container d-flex flex-column flex-md-row justify-content-center gap-3 mb-3">
+        <button id="decodeBtn" class="btn btn-success" aria-label="Decode your design"><i class="fas fa-upload"></i>  Upload to Decode</button>
+        <button id="customBtn" class="btn btn-success" aria-label="Start custom design"><i class="fas fa-sliders-h"></i> Custom Design</button>
+        <input type="file" id="fileInput" accept="image/*" hidden aria-label="Upload image file">
       </div>
-      <div id="questionContainer" class="question-container mt-4"></div>
-      <div id="designResult" class="design-result mt-4"></div>
+      <button id="generateBtn" class="btn generate-btn" aria-label="Generate random design">Generate</button>
     </div>
-  </header>
+    <div id="questionContainer" class="question-container mt-4"></div>
+    <div id="designResult" class="design-result mt-4"></div>
+  </div>
+</header>
+<br>
+
+
+
+<!-- How it works -->
+ <section id="how-it-works">
+  <h2>How It <span>Works</span></h2>
+  <p class="subtitle">Two simple paths to transform your balcony into a beautiful, functional space</p>
+ 
+  <div class="flows">
+    <!-- Decode Flow -->
+    <div class="card animate">
+      <h3><i class="fa-solid fa-magnifying-glass"></i> Decode Flow</h3>
+      <ul>
+        <li>
+          <i class="fa-solid fa-upload"></i>
+          <div class="text">
+            <strong>Upload Photo</strong>
+            Share your current balcony photo or render for AI analysis.
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-brain"></i>
+          <div class="text">
+            <strong>AI Detection</strong>
+            Our AI identifies plants, furniture, materials, and creates bounding boxes with labels.
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-cart-shopping"></i>
+          <div class="text">
+            <strong>Shop & Plan</strong>
+            Get matched Indian SKUs, BOM with vendor links, and plant care cards.
+          </div>
+        </li>
+      </ul>
+    </div>
+ 
+    <!-- Design Flow -->
+    <div class="card animate">
+      <h3><i class="fa-solid fa-paintbrush"></i> Design Flow</h3>
+      <ul>
+        <li>
+          <i class="fa-solid fa-clipboard-question"></i>
+          <div class="text">
+            <strong>Answer Questions</strong>
+            Tell us about your space size, style preference, budget, and special needs.
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-image"></i>
+          <div class="text">
+            <strong>AI Generation</strong>
+            Get a custom photoreal balcony render with cinematic 35mm quality.
+          </div>
+        </li>
+        <li>
+          <i class="fa-solid fa-download"></i>
+          <div class="text">
+            <strong>Export & Shop</strong>
+            Download BOM PDF, moodboard PNG, share to Instagram, and shop vendor links.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+ 
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat animate">
+      <h4>15+</h4>
+      <p>Vendor Partners</p>
+    </div>
+    <div class="stat animate">
+      <h4>50+</h4>
+      <p>Plant Varieties</p>
+    </div>
+    <div class="stat animate">
+      <h4>₹15k+</h4>
+      <p>Budget Range</p>
+    </div>
+    <div class="stat animate">
+      <h4>24h</h4>
+      <p>Delivery Ready</p>
+    </div>
+  </div>
+</section>
+
 
   <!-- Services -->
   <section id="services" class="py-5 bg-white">
@@ -69,8 +161,8 @@
       <h2 data-aos="fade-up" class="text-center mb-5">Our Services</h2>
       <div class="row g-4">
         <div class="col-lg-4 col-md-6">
-          <div class="service card h-100" data-aos="zoom-in" data-aos-delay="100">
-            <img src="https://images.unsplash.com/photo-1501045661006-fcebe0257c3f" class="card-img-top" alt="Modern balcony design with furniture and plants">
+          <div id="card1" class="service card h-100" data-aos="zoom-in" data-aos-delay="100">
+            <img src="images/hero image.jpeg" class="card-img-top" alt="Modern balcony design with furniture and plants">
             <div class="card-body">
               <h3 class="card-title">Balcony Design</h3>
               <p class="card-text">Stylish and modern balcony makeovers with furniture & pots.</p>
@@ -78,8 +170,8 @@
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="service card h-100" data-aos="zoom-in" data-aos-delay="200">
-            <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6" class="card-img-top" alt="Lush garden landscaping with greenery">
+          <div id="card1" class="service card h-100" data-aos="zoom-in" data-aos-delay="200">
+            <img src="images/heroimage5.jpg" class="card-img-top" alt="Lush garden landscaping with greenery">
             <div class="card-body">
               <h3 class="card-title">Garden Landscaping</h3>
               <p class="card-text">Transforming outdoor gardens into peaceful retreats.</p>
@@ -87,8 +179,8 @@
           </div>
         </div>
         <div class="col-lg-4 col-md-6">
-          <div class="service card h-100" data-aos="zoom-in" data-aos-delay="300">
-            <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" class="card-img-top" alt="Outdoor furniture setup with stylish decor">
+          <div id="card1" class="service card h-100" data-aos="zoom-in" data-aos-delay="300">
+            <img src="images/heroimage2.png" class="card-img-top" alt="Outdoor furniture setup with stylish decor">
             <div class="card-body">
               <h3 class="card-title">Outdoor Furniture</h3>
               <p class="card-text">Custom furniture & pots to complete your outdoor space.</p>
@@ -99,26 +191,26 @@
     </div>
   </section>
 
-  <!-- Gallery -->
-  <section id="gallery" class="py-5 bg-light-green">
-    <div class="container">
-      <h2 data-aos="fade-up" class="text-center mb-5">Gallery</h2>
-      <div class="row g-4">
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Balcony with modern furniture and plants" class="img-fluid rounded-3" data-aos="fade-up">
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <img src="https://mfmd.rencdn.com/product/ashley/images/P791-773-821_4-ON.jpg" alt="Outdoor seating area with cozy furniture" class="img-fluid rounded-3" data-aos="fade-up" data-aos-delay="100">
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <img src="https://tse1.mm.bing.net/th/id/OIP.tTpSFhAENaeDkSL4F0tvUwHaFJ?pid=Api&P=0&h=220" alt="Decorative pots with vibrant plants" class="img-fluid rounded-3" data-aos="fade-up" data-aos-delay="200">
-        </div>
-        <div class="col-lg-3 col-md-4 col-sm-6">
-          <img src="https://tse2.mm.bing.net/th/id/OIP.i6VtAwJW-Lc86gyCjB4JTAHaE5?pid=Api&P=0&h=220" alt="Modern garden with clean landscaping" class="img-fluid rounded-3" data-aos="fade-up" data-aos-delay="300">
-        </div>
+<!-- Gallery -->
+<section id="gallery" class="py-5 bg-light-green">
+  <div class="container">
+    <h2 data-aos="fade-up" class="text-center mb-5">Gallery</h2>
+    <div class="gallery-marquee">
+      <div class="marquee-track">
+        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Balcony with modern furniture and plants" class="img-fluid rounded-3">
+        <img src="https://mfmd.rencdn.com/product/ashley/images/P791-773-821_4-ON.jpg" alt="Outdoor seating area with cozy furniture" class="img-fluid rounded-3">
+        <img src="https://tse1.mm.bing.net/th/id/OIP.tTpSFhAENaeDkSL4F0tvUwHaFJ?pid=Api&P=0&h=220" alt="Decorative pots with vibrant plants" class="img-fluid rounded-3">
+        <img src="https://tse2.mm.bing.net/th/id/OIP.i6VtAwJW-Lc86gyCjB4JTAHaE5?pid=Api&P=0&h=220" alt="Modern garden with clean landscaping" class="img-fluid rounded-3">
+        <!-- Repeat images for smooth scrolling -->
+        <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Balcony with modern furniture and plants" class="img-fluid rounded-3">
+        <img src="https://mfmd.rencdn.com/product/ashley/images/P791-773-821_4-ON.jpg" alt="Outdoor seating area with cozy furniture" class="img-fluid rounded-3">
+        <img src="https://tse1.mm.bing.net/th/id/OIP.tTpSFhAENaeDkSL4F0tvUwHaFJ?pid=Api&P=0&h=220" alt="Decorative pots with vibrant plants" class="img-fluid rounded-3">
+        <img src="https://tse2.mm.bing.net/th/id/OIP.i6VtAwJW-Lc86gyCjB4JTAHaE5?pid=Api&P=0&h=220" alt="Modern garden with clean landscaping" class="img-fluid rounded-3">
       </div>
     </div>
-  </section>
+  </div>
+</section>
+
 
   <!-- Contact -->
   <section id="contact" class="py-5 text-center">

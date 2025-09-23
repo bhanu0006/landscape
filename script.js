@@ -1,6 +1,7 @@
 // Initialize AOS animations
 AOS.init({ duration: 1000 });
 console.log("works")
+
 // DOM elements
 const decodeBtn = document.getElementById("decodeBtn");
 const fileInput = document.getElementById("fileInput");
@@ -12,24 +13,9 @@ const questionContainer = document.getElementById("questionContainer");
 
 // Predefined static images mapped to style preferences (12 images, 4 per style)
 const styleImages = {
-  modern: [
-    "images/landscape1.jpeg", // Modern outdoor patio
-    "images/landscape2.jpeg", // Modern balcony
-    "images/landscape3.jpeg", // Modern garden
-    "images/landscape4.jpeg" // Modern furniture setup
-  ],
-  rustic: [
-    "images/landscape5.jpeg", // Rustic garden
-    "images/landscape6.jpeg", // Rustic patio
-    "images/landscape7.jpeg", // Rustic outdoor seating
-    "images/landscape8.jpeg" // Rustic backyard
-  ],
-  classic: [
-    "images/landscape9.jpeg", // Classic garden
-    "images/landscape10.jpeg", // Classic outdoor space
-    "images/landscape11.jpeg", // Classic patio
-    "images/landscape12.jpeg" // Classic furniture setup
-  ]
+  modern: ["images/landscape1.jpeg","images/landscape2.jpeg","images/landscape3.jpeg","images/landscape4.jpeg"],
+  rustic: ["images/landscape5.jpeg","images/landscape6.jpeg","images/landscape7.jpeg","images/landscape8.jpeg"],
+  classic: ["images/landscape9.jpeg","images/landscape10.jpeg","images/landscape11.jpeg","images/landscape12.jpeg"]
 };
 
 const fallbackImage = "./images/landscape12.jpeg";
@@ -37,14 +23,10 @@ let lastUsedImage = null;
 
 // Generate random image from static styleImages based on style preference
 function getRandomImage(stylePref = "modern") {
-  // Use the user's selected style or default to "modern"
   const imagePool = styleImages[stylePref] || styleImages.modern;
-  // Filter out the last used image to avoid repetition
   const availableImages = imagePool.filter(image => image !== lastUsedImage);
   const selectedImages = availableImages.length > 0 ? availableImages : imagePool;
-  // Select a random image from the available pool
   const selectedImage = selectedImages[Math.floor(Math.random() * selectedImages.length)] || fallbackImage;
-  console.log("dfghjk"+selectedImage)
   lastUsedImage = selectedImage;
   return selectedImage;
 }
@@ -65,9 +47,8 @@ decodeBtn.addEventListener("click", () => fileInput.click());
 
 // Handle file upload
 fileInput.addEventListener("change", (event) => {
-  const file = event.target.files[3];
+  const file = event.target.files[0]; // ✅ fixed: should be first selected file
   if (file) {
-    // Validate file type (only images)
     if (!file.type.startsWith("image/")) {
       const alertDiv = document.createElement("div");
       alertDiv.className = "alert alert-warning alert-dismissible fade show";
@@ -81,19 +62,35 @@ fileInput.addEventListener("change", (event) => {
     }
     const imageUrl = URL.createObjectURL(file);
     sampleImage.src = imageUrl;
-    generateBtn.classList.remove("d-none"); // Use Bootstrap's display utility
-    sampleImage.onerror = () => {
-      sampleImage.src = fallbackImage; // Fallback if uploaded image fails
-    };
+    generateBtn.classList.remove("d-none");
+    sampleImage.onerror = () => { sampleImage.src = fallbackImage; };
     sampleImage.onload = () => URL.revokeObjectURL(imageUrl);
+
+    // ✅ NEW: auto show rough estimation after upload (like in your reference code)
+    designResult.innerHTML = "<h3>Estimated Costs:</h3>";
+    const ul = document.createElement("ul");
+    ul.className = "list-unstyled";
+    let totalCost = 0;
+    for (const category in defaultSelections) {
+      const cost = prices[category].costs[defaultSelections[category]] || prices[category].costs.default;
+      totalCost += cost;
+      const li = document.createElement("li");
+      li.textContent = `${category}: $${cost} / ₹${(cost * exchangeRate).toFixed(2)}`;
+      ul.appendChild(li);
+    }
+    designResult.appendChild(ul);
+    const total = document.createElement("p");
+    total.className = "total-cost mt-3";
+    total.textContent = `Total: $${totalCost} / ₹${(totalCost * exchangeRate).toFixed(2)}`;
+    designResult.appendChild(total);
   }
 });
 
-// Generate default design costs
+// Generate default design costs (manual button)
 generateBtn.addEventListener("click", () => {
   designResult.innerHTML = "<h3>Estimated Costs:</h3>";
   const ul = document.createElement("ul");
-  ul.className = "list-unstyled"; // Bootstrap class for unstyled list
+  ul.className = "list-unstyled";
   let totalCost = 0;
   for (const category in defaultSelections) {
     const cost = prices[category].costs[defaultSelections[category]] || prices[category].costs.default;
@@ -104,10 +101,9 @@ generateBtn.addEventListener("click", () => {
   }
   designResult.appendChild(ul);
   const total = document.createElement("p");
-  total.className = "total-cost mt-3"; // Bootstrap margin utility
-  totalCost.textContent = `Total: $${totalCost} / ₹${(totalCost * exchangeRate).toFixed(2)}`;
+  total.className = "total-cost mt-3";
+  total.textContent = `Total: $${totalCost} / ₹${(totalCost * exchangeRate).toFixed(2)}`;
   designResult.appendChild(total);
-  // Trigger AOS refresh for dynamic content
   AOS.refresh();
 });
 
@@ -133,7 +129,7 @@ function showQuestion() {
     return;
   }
   const q = questions[currentQ];
-  questionContainer.className = "question-container mt-4 active"; // Ensure Bootstrap classes
+  questionContainer.className = "question-container mt-4 active";
   questionContainer.innerHTML = `
     <p class="mb-2">${q.question}</p>
     <select class="form-select mb-3" aria-label="Select ${q.key}">
@@ -142,7 +138,7 @@ function showQuestion() {
     </select>
   `;
   const nextBtn = document.createElement("button");
-  nextBtn.className = "next-btn btn btn-primary"; // Bootstrap button classes
+  nextBtn.className = "next-btn btn btn-primary";
   nextBtn.textContent = currentQ === questions.length - 1 ? "Finish" : "Next";
   nextBtn.onclick = () => {
     const select = questionContainer.querySelector("select");
@@ -162,7 +158,6 @@ function showQuestion() {
     showQuestion();
   };
   questionContainer.appendChild(nextBtn);
-  // Trigger AOS refresh for dynamic content
   AOS.refresh();
 }
 
@@ -170,7 +165,7 @@ function showResults() {
   questionContainer.classList.remove("active");
   designResult.innerHTML = "<h3>Your Custom Design Choices:</h3>";
   const ul = document.createElement("ul");
-  ul.className = "list-unstyled"; // Bootstrap class for unstyled list
+  ul.className = "list-unstyled";
   let total = 0;
   for (const key in answers) {
     const cost = prices[key].costs[answers[key]] || prices[key].costs.default;
@@ -181,17 +176,25 @@ function showResults() {
   }
   designResult.appendChild(ul);
   const totalCost = document.createElement("p");
-  totalCost.className = "total-cost mt-3"; // Bootstrap margin utility
+  totalCost.className = "total-cost mt-3";
   totalCost.textContent = `Total: $${total} / ₹${(total * exchangeRate).toFixed(2)}`;
   designResult.appendChild(totalCost);
-  // Select random image based on stylePref, default to "modern"
+
   const selectedStyle = answers.stylePref || "modern";
   const selectedImage = getRandomImage(selectedStyle);
-  console.log("king")
   sampleImage.src = selectedImage;
-  sampleImage.onerror = () => {
-    sampleImage.src = fallbackImage; // Fallback if selected image fails
-  };
-  // Trigger AOS refresh for dynamic content
+  sampleImage.onerror = () => { sampleImage.src = fallbackImage; };
   AOS.refresh();
 }
+
+
+// How is works
+// Reveal elements on scroll
+document.addEventListener("scroll", () => {
+  document.querySelectorAll(".animate").forEach(el => {
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight - 50) {
+      el.classList.add("visible");
+    }
+  });
+});
