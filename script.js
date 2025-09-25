@@ -242,7 +242,43 @@ const possibleItems = {
 };
 
 // Simulated ML Detection
+// Predefined static data for specific uploaded images
+const staticBOMData = {
+  "images/uploadimage1.png": [
+    "lights",
+    "Plants & Greenery",
+    "Rug",
+    "sofa with cushions",
+    "coffee table",
+    "wooden arm chair",
+    "floor lamp"
+  ],
+  "images/uploadimage2.jpeg": [
+    "plants",
+    "furniture",
+    "Wall Decor",
+    "lights",
+    "Flooring & Rugs"
+  ],
+  "images/uploadimage3.png": [
+    "swing chair",
+    "green grass carpet",
+    "hanging pendant lamp",
+    "lightings",
+    "potted plants and creepers"
+  ]
+};
+
+// Updated ML Detection function
 function detectItemsFromImage(filename) {
+  // Check if the uploaded file matches a static BOM
+  for (const key in staticBOMData) {
+    if (filename.includes(key.split("/").pop())) { // match by filename only
+      return staticBOMData[key]; // return predefined static items
+    }
+  }
+
+  // Existing random logic for other files
   const keys = Object.keys(possibleItems);
   const lower = filename.toLowerCase();
   const detected = [];
@@ -287,35 +323,44 @@ fileInput.addEventListener("change", (e) => {
 
     const detectedItems = detectItemsFromImage(file.name);
 
-    generateBtn.onclick = () => {
-      decodedBOMBody.innerHTML = "";
-      let total = 0;
+  generateBtn.onclick = () => {
+  decodedBOMBody.innerHTML = "";
+  let total = 0;
 
-      detectedItems.forEach(item => {
-        const qty = Math.floor(Math.random() * 6) + 2;
-        const price = Math.floor(Math.random() * (possibleItems[item].maxPrice - possibleItems[item].minPrice + 1)) + possibleItems[item].minPrice;
-        const totalItemPrice = qty * price;
-        total += totalItemPrice;
+  detectedItems.forEach(item => {
+    const qty = Math.floor(Math.random() * 6) + 2;
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${capitalize(item)}</td>
-          <td>${qty}</td>
-          <td>₹${price}</td>
-          <td>₹${totalItemPrice}</td>
-        `;
-        decodedBOMBody.appendChild(row);
-      });
+    // Check if item exists in possibleItems, else assign a default random price
+    let price = 0;
+    if (possibleItems[item]) {
+      price = Math.floor(Math.random() * (possibleItems[item].maxPrice - possibleItems[item].minPrice + 1)) + possibleItems[item].minPrice;
+    } else {
+      price = Math.floor(Math.random() * (3000 - 500 + 1)) + 500; // default random price for static items
+    }
 
-      decodedTotal.textContent = `₹${total.toLocaleString()}`;
-      document.getElementById("bomTableContainer").style.display = "block";
-      generateBtn.disabled = true;
+    const totalItemPrice = qty * price;
+    total += totalItemPrice;
 
-      // 👉 Enable editing for decoded BOM
-      makeQuantityEditable("decodedBOMBody", "decodedTotal");
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${capitalize(item)}</td>
+      <td>${qty}</td>
+      <td>₹${price}</td>
+      <td>₹${totalItemPrice}</td>
+    `;
+    decodedBOMBody.appendChild(row);
+  });
 
-      AOS.refresh();
-    };
+  decodedTotal.textContent = `₹${total.toLocaleString()}`;
+  document.getElementById("bomTableContainer").style.display = "block";
+  generateBtn.disabled = true;
+
+  // Enable editing for decoded BOM
+  makeQuantityEditable("decodedBOMBody", "decodedTotal");
+
+  AOS.refresh();
+};
+
   };
   reader.readAsDataURL(file);
 });

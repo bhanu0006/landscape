@@ -539,3 +539,22 @@ p.subtitle {
   margin: 0 auto;
 }
 
+#decodedImagePreview {
+    width: 100%;
+  max-width: 500px;   /* adjust as per your layout */
+  height: 350px;      /* fixed height */
+  object-fit: cover;  /* ensures image fills nicely */
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+}
+
+.card-img-top{
+      width: 100%;
+  max-width: 500px;   /* adjust as per your layout */
+  height: 200px;      /* fixed height */
+  object-fit: cover;  /* ensures image fills nicely */
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+}
