@@ -17,6 +17,10 @@ body {
   z-index: 100;
 }
 
+a span {
+  color: #4CAF50;
+}
+
 .navbar-brand {
   font-size: 24px;
   font-weight: 700;
@@ -31,6 +35,8 @@ body {
 .nav-link:hover,
 .nav-link:focus {
   color: #ce840c !important;
+  text-decoration: underline;
+  text-decoration-thickness: 2px; 
 }
 
 
@@ -521,3 +527,15 @@ p.subtitle {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* Custom Result Image Styling */
+#customResultImage {
+  width: 100%;
+  max-width: 500px;   /* adjust as per your layout */
+  height: 350px;      /* fixed height */
+  object-fit: cover;  /* ensures image fills nicely */
+  border-radius: 12px;
+  display: block;
+  margin: 0 auto;
+}
+

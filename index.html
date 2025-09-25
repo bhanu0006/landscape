@@ -20,12 +20,15 @@
   <!-- Font Awesome CDN -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
 
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top">
     <div class="container">
-      <a class="navbar-brand" href="#">🌿 Landscape</a>
+      <a class="navbar-brand" href="#">🌿 <span>Land</span>scape</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -222,7 +225,7 @@
   <!-- Services -->
   <section id="services" class="py-5 bg-white">
     <div class="container">
-      <h2 data-aos="fade-up" class="text-center mb-5">Our Services</h2>
+      <h2 data-aos="fade-up" class="text-center mb-5"><span>Our</span> Services</h2>
       <div class="row g-4">
         <div class="col-lg-4 col-md-6">
           <div id="card1" class="service card h-100" data-aos="zoom-in" data-aos-delay="100">
@@ -258,7 +261,7 @@
 <!-- Gallery -->
 <section id="gallery" class="py-5 bg-light-green">
   <div class="container">
-    <h2 data-aos="fade-up" class="text-center mb-5">Gallery</h2>
+    <h2 data-aos="fade-up" class="text-center mb-5"><span>Gall</span>ery</h2>
     <div class="gallery-marquee">
       <div class="marquee-track">
         <img src="https://images.unsplash.com/photo-1505691938895-1758d7feb511" alt="Balcony with modern furniture and plants" class="img-fluid rounded-3">
@@ -279,7 +282,7 @@
   <!-- Contact -->
   <section id="contact" class="py-5 text-center">
     <div class="container">
-      <h2 data-aos="fade-up" class="mb-4">Contact Us</h2>
+      <h2 data-aos="fade-up" class="mb-4">Contact <span>Us</span></h2>
       <p data-aos="fade-up" data-aos-delay="100" class="lead mb-4">Ready to transform your outdoor space? Let’s get started today.</p>
       <a href="mailto:info@landscape.com" class="btn btn-success" data-aos="zoom-in">Get in Touch</a>
     </div>
@@ -290,7 +293,7 @@
   <div class="contact-box">
     <span class="contact-close" id="closeContact">&times;</span>
     <h3>Contact Form</h3>
-    <form>
+    <form id="contactForm">
       <div class="mb-3 text-start">
         <label for="contactName" class="form-label">Name</label>
         <input type="text" id="contactName" class="form-control" required>
@@ -311,6 +314,7 @@
     </form>
   </div>
 </div>
+
 
 
   <!-- Footer -->

@@ -141,71 +141,62 @@ function showResults() {
   customResultImage.src = selectedImage;
   customResultImage.onerror = () => { customResultImage.src = fallbackImage; };
 
-  // === Preferences column format ===
-  const prefString = Object.entries(answers)
-    .map(([key, value]) => `${key}: ${value}`)
-    .join(", ");
-
   let grandTotal = 0;
 
-Object.entries(answers).forEach(([key, value]) => {
-  let qty = Math.floor(Math.random() * 10) + 1;
-  let pricePerItem = 0;
-  let qtyDisplay = qty;
-  let priceDisplay = "";
-  let totalDisplay = "";
-  let rowTotal = 0;
+  Object.entries(answers).forEach(([key, value]) => {
+    let qty = Math.floor(Math.random() * 10) + 1;
+    let pricePerItem = 0;
+    let qtyDisplay = qty;
+    let priceDisplay = "";
+    let totalDisplay = "";
+    let rowTotal = 0;
 
-  // === Handle stylePref ===
-  if (key === "stylePref") {
-    qtyDisplay = "-";
-    if (value === "modern") pricePerItem = 6000;
-    else if (value === "rustic") pricePerItem = 5500;
-    else if (value === "classic") pricePerItem = 5700;
-    else pricePerItem = 5000;
+    if (key === "stylePref") {
+      qtyDisplay = "-";
+      if (value === "modern") pricePerItem = 6000;
+      else if (value === "rustic") pricePerItem = 5500;
+      else if (value === "classic") pricePerItem = 5700;
+      else pricePerItem = 5000;
 
-    rowTotal = pricePerItem;
-    priceDisplay = `₹${pricePerItem.toLocaleString()}`;
-    totalDisplay = `₹${rowTotal.toLocaleString()}`;
-    grandTotal += rowTotal;
-  }
+      rowTotal = pricePerItem;
+      priceDisplay = `₹${pricePerItem.toLocaleString()}`;
+      totalDisplay = `₹${rowTotal.toLocaleString()}`;
+      grandTotal += rowTotal;
+    }
+    else if (key === "plants" && value === "none") {
+      qtyDisplay = priceDisplay = totalDisplay = "-";
+      rowTotal = 0;
+    }
+    else if (key === "plants") {
+      pricePerItem = value === "lots" ? 300 : 200;
+      rowTotal = qty * pricePerItem;
+      priceDisplay = `₹${pricePerItem.toLocaleString()}`;
+      totalDisplay = `₹${rowTotal.toLocaleString()}`;
+      grandTotal += rowTotal;
+    }
+    else if (key === "furniture") {
+      pricePerItem = value === "sofa" ? 7000 : value === "dining" ? 5000 : 4000;
+      rowTotal = qty * pricePerItem;
+      priceDisplay = `₹${pricePerItem.toLocaleString()}`;
+      totalDisplay = `₹${rowTotal.toLocaleString()}`;
+      grandTotal += rowTotal;
+    }
 
-  // === Handle plants with "none" ===
-  else if (key === "plants" && value === "none") {
-    qtyDisplay = priceDisplay = totalDisplay = "-";
-    rowTotal = 0;
-  }
-
-  // === Handle plants with "few" or "lots" ===
-  else if (key === "plants") {
-    pricePerItem = value === "lots" ? 300 : 200;
-    rowTotal = qty * pricePerItem;
-    priceDisplay = `₹${pricePerItem.toLocaleString()}`;
-    totalDisplay = `₹${rowTotal.toLocaleString()}`;
-    grandTotal += rowTotal;
-  }
-
-  // === Handle furniture ===
-  else if (key === "furniture") {
-    pricePerItem = value === "sofa" ? 7000 : value === "dining" ? 5000 : 4000;
-    rowTotal = qty * pricePerItem;
-    priceDisplay = `₹${pricePerItem.toLocaleString()}`;
-    totalDisplay = `₹${rowTotal.toLocaleString()}`;
-    grandTotal += rowTotal;
-  }
-
-  const tr = document.createElement("tr");
-  tr.innerHTML = `
-    <td>${capitalize(key)}: ${capitalize(value)}</td>
-    <td>${qtyDisplay}</td>
-    <td>${priceDisplay}</td>
-    <td>${totalDisplay}</td>
-  `;
-  customBOMBody.appendChild(tr);
-});
-
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${capitalize(key)}: ${capitalize(value)}</td>
+      <td>${qtyDisplay}</td>
+      <td>${priceDisplay}</td>
+      <td>${totalDisplay}</td>
+    `;
+    customBOMBody.appendChild(tr);
+  });
 
   customTotal.textContent = `₹${grandTotal.toLocaleString()}`;
+
+  // 👉 Enable editing for custom BOM
+  makeQuantityEditable("customBOMBody", "customTotal");
+
   AOS.refresh();
 }
 
@@ -215,13 +206,11 @@ function hideDecodedSection() {
   if (decodedSection) decodedSection.style.display = "none";
 }
 
-
 // Helper: capitalize first letter
 function capitalize(str) {
   if (!str) return "";
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
 
 // How it works: Reveal elements on scroll
 document.addEventListener("scroll", () => {
@@ -232,7 +221,6 @@ document.addEventListener("scroll", () => {
     }
   });
 });
-
 
 // upload to decode
 const fileInput = document.getElementById("fileInput");
@@ -253,7 +241,7 @@ const possibleItems = {
   tiles: { minPrice: 1000, maxPrice: 2500 }
 };
 
-// Simulated ML Detection based on file name keywords
+// Simulated ML Detection
 function detectItemsFromImage(filename) {
   const keys = Object.keys(possibleItems);
   const lower = filename.toLowerCase();
@@ -270,49 +258,41 @@ function detectItemsFromImage(filename) {
   if (lower.includes("wall")) detected.push("wallDecor");
   if (lower.includes("water") || lower.includes("fountain")) detected.push("waterFeature");
 
-  // If nothing detected, randomly select up to 6 unique items
   if (detected.length === 0) {
     const shuffled = [...keys].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 6);
   }
-
   return [...new Set(detected)].slice(0, 6);
 }
-
 
 // Decode button logic
 decodeBtn.addEventListener("click", () => {
   fileInput.click();
 });
 
-// When user selects an image
 fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
-customResultSection.style.display = "none"; 
+  customResultSection.style.display = "none"; 
 
   const reader = new FileReader();
   reader.onload = function (event) {
-  customResultSection.style.display = "none"; // 👈 Hide custom design
-  decodedImagePreview.src = event.target.result;
-  decodedSection.style.display = "block";
+    customResultSection.style.display = "none";
+    decodedImagePreview.src = event.target.result;
+    decodedSection.style.display = "block";
 
-
-    // Reset BOM display
     document.getElementById("bomTableContainer").style.display = "none";
     const generateBtn = document.getElementById("generateBOMBtn");
     generateBtn.disabled = false;
 
-    // Store detected items for later generation
     const detectedItems = detectItemsFromImage(file.name);
 
-    // Generate BOM on button click
     generateBtn.onclick = () => {
       decodedBOMBody.innerHTML = "";
       let total = 0;
 
       detectedItems.forEach(item => {
-        const qty = Math.floor(Math.random() * 6) + 2; // 2–7
+        const qty = Math.floor(Math.random() * 6) + 2;
         const price = Math.floor(Math.random() * (possibleItems[item].maxPrice - possibleItems[item].minPrice + 1)) + possibleItems[item].minPrice;
         const totalItemPrice = qty * price;
         total += totalItemPrice;
@@ -330,27 +310,24 @@ customResultSection.style.display = "none";
       decodedTotal.textContent = `₹${total.toLocaleString()}`;
       document.getElementById("bomTableContainer").style.display = "block";
       generateBtn.disabled = true;
+
+      // 👉 Enable editing for decoded BOM
+      makeQuantityEditable("decodedBOMBody", "decodedTotal");
+
       AOS.refresh();
     };
   };
   reader.readAsDataURL(file);
 });
 
-function capitalize(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
-
-
 // contact form
-// Open and close contact overlay
 const contactBtn = document.querySelector('a.btn.btn-success[data-aos="zoom-in"]'); 
 const contactOverlay = document.getElementById("contactOverlay");
 const closeContact = document.getElementById("closeContact");
 
 if (contactBtn) {
   contactBtn.addEventListener("click", (e) => {
-    e.preventDefault(); // stop mailto
+    e.preventDefault();
     contactOverlay.style.display = "flex";
   });
 }
@@ -361,9 +338,74 @@ if (closeContact) {
   });
 }
 
-// Optional: close when clicking outside the box
 contactOverlay.addEventListener("click", (e) => {
   if (e.target === contactOverlay) {
     contactOverlay.style.display = "none";
   }
 });
+
+// Handle Contact Form Submit
+const contactForm = document.getElementById("contactForm");
+
+if (contactForm) {
+  contactForm.addEventListener("submit", (e) => {
+    e.preventDefault(); // stop normal form submission
+
+    // Close overlay
+    contactOverlay.style.display = "none";
+
+    // Show SweetAlert success message
+    Swal.fire({
+      title: "Submitted Successfully!",
+      text: "Thanks for contacting us. We’ll get back to you soon.",
+      icon: "success",
+      confirmButtonText: "OK",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown"
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp"
+      }
+    });
+
+    // Reset form fields
+    contactForm.reset();
+  });
+}
+
+
+// 🔹 Quantity Editable Function
+function makeQuantityEditable(tableBodyId, totalId) {
+  const tableBody = document.getElementById(tableBodyId);
+  const totalEl = document.getElementById(totalId);
+
+  if (!tableBody) return;
+
+  tableBody.querySelectorAll("td:nth-child(2)").forEach((cell) => {
+    if (cell.textContent.trim() === "-" || cell.querySelector("input")) return;
+
+    const oldValue = cell.textContent.trim();
+    cell.innerHTML = `<input type="number" min="0" value="${oldValue}" class="form-control form-control-sm text-center">`;
+
+    const input = cell.querySelector("input");
+    input.addEventListener("input", () => {
+      const row = cell.parentElement;
+      const qty = parseInt(input.value) || 0;
+
+      const priceCell = row.children[2];
+      const totalCell = row.children[3];
+
+      const price = parseInt(priceCell.textContent.replace(/[₹,]/g, "")) || 0;
+      const newRowTotal = qty * price;
+
+      totalCell.textContent = `₹${newRowTotal.toLocaleString()}`;
+
+      let newGrand = 0;
+      tableBody.querySelectorAll("tr").forEach((r) => {
+        const val = parseInt(r.children[3].textContent.replace(/[₹,]/g, "")) || 0;
+        newGrand += val;
+      });
+      totalEl.textContent = `₹${newGrand.toLocaleString()}`;
+    });
+  });
+}
