@@ -317,6 +317,9 @@ fileInput.addEventListener("change", (e) => {
     decodedImagePreview.src = event.target.result;
     decodedSection.style.display = "block";
 
+    // Smooth scroll to decoded section so user sees the result
+decodedSection.scrollIntoView({ behavior: "smooth", block: "start" });
+
     document.getElementById("bomTableContainer").style.display = "none";
     const generateBtn = document.getElementById("generateBOMBtn");
     generateBtn.disabled = false;
