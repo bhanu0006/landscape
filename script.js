@@ -10,6 +10,17 @@ const designResult = document.getElementById("designResult");
 const customBtn = document.getElementById("customBtn");
 const questionContainer = document.getElementById("questionContainer");
 
+// 🔹 Predefined answer-to-image mapping
+const predefinedImages = {
+  "classic_sofa_few": "images/customimage1.jpg",
+  "classic_sofa_lots": "images/customimage2.jpg",
+  "modern_bench_none": "images/customimage3.jpg",
+  "modern_sofa_few": "images/customimage4.jpg",
+  "rustic_bench_lots": "images/customimage5.jpg",
+  "rustic_dining_few": "images/customimage6.jpg"
+};
+
+
 // Predefined static images mapped to style preferences (12 images, 4 per style)
 const styleImages = {
   modern: ["images/landscape1.jpeg","images/landscape2.jpeg","images/landscape3.jpeg","images/landscape4.jpeg"],
@@ -126,8 +137,20 @@ function showResults() {
   questionContainer.classList.remove("active");
   hideDecodedSection(); // 👈 Hide upload-to-decode section if showing
 
+ // Build a key like "classic_sofa_few"
+const comboKey = `${answers.stylePref || ""}_${answers.furniture || ""}_${answers.plants || ""}`;
+
+let selectedImage;
+
+// If this combination exists in predefined images, use that
+if (predefinedImages[comboKey]) {
+  selectedImage = predefinedImages[comboKey];
+} else {
+  // Otherwise fallback to your existing random image logic
   const selectedStyle = answers.stylePref || "modern";
-  const selectedImage = getRandomImage(selectedStyle);
+  selectedImage = getRandomImage(selectedStyle);
+}
+
 
   // Elements
   const customResultSection = document.getElementById("customResultSection");
