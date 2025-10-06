@@ -77,9 +77,9 @@ generateBtn.addEventListener("click", () => {
 
 /* Custom Q&A */
 const questions = [
-  { question: "Which style do you prefer?", key: "stylePref", options: ["modern", "rustic", "classic"] },
-  { question: "What type of furniture do you want?", key: "furniture", options: ["sofa", "dining", "bench"] },
-  { question: "How much greenery do you want?", key: "plants", options: ["lots", "few", "none"] }
+  { question: "Which style do you prefer?", key: "StylePref", options: ["Modern", "Rustic", "Classic"] },
+  { question: "What type of furniture do you want?", key: "Furniture", options: ["Sofa", "Dining", "Bench"] },
+  { question: "How much greenery do you want?", key: "Plants", options: ["Lots", "Few", "None"] }
 ];
 
 let currentQ = 0;
