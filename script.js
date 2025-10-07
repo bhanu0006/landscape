@@ -1,9 +1,8 @@
 // Initialize AOS animations
 AOS.init({ duration: 1000 });
-console.log("works")
+console.log("works");
 
 // DOM elements
-// Removed decodeBtn + fileInput completely ✅
 const sampleImage = document.getElementById("sampleImage");
 const generateBtn = document.getElementById("generateBtn");
 const designResult = document.getElementById("designResult");
@@ -20,6 +19,15 @@ const predefinedImages = {
   "rustic_dining_few": "images/customimage6.jpg"
 };
 
+// 🔹 Predefined static quantities for each combination
+const predefinedQuantities = {
+  "classic_sofa_few": { furniture: 2, plants: 5 },
+  "classic_sofa_lots": { furniture: 2, plants: 10 },
+  "modern_bench_none": { furniture: 1, plants: 0 },
+  "modern_sofa_few": { furniture: 1, plants: 8 },
+  "rustic_bench_lots": { furniture: 1, plants: 12 },
+  "rustic_dining_few": { furniture: 1, plants: 4 }
+};
 
 // Predefined static images mapped to style preferences (12 images, 4 per style)
 const styleImages = {
@@ -88,7 +96,7 @@ let answers = {};
 customBtn.addEventListener("click", () => {
   currentQ = 0;
   answers = {};
-  hideDecodedSection(); // 👈 Hide decoded result if showing
+  hideDecodedSection();
   showQuestion();
 });
 
@@ -135,22 +143,20 @@ function showQuestion() {
 // Main logic for generating Custom Design Results
 function showResults() {
   questionContainer.classList.remove("active");
-  hideDecodedSection(); // 👈 Hide upload-to-decode section if showing
+  hideDecodedSection();
 
- // Build a key like "classic_sofa_few"
-const comboKey = `${answers.stylePref || ""}_${answers.furniture || ""}_${answers.plants || ""}`;
+  const comboKey = `${(answers.StylePref || "").toLowerCase()}_${(answers.Furniture || "").toLowerCase()}_${(answers.Plants || "").toLowerCase()}`;
 
-let selectedImage;
+  let selectedImage;
+  let quantities = {};
 
-// If this combination exists in predefined images, use that
-if (predefinedImages[comboKey]) {
-  selectedImage = predefinedImages[comboKey];
-} else {
-  // Otherwise fallback to your existing random image logic
-  const selectedStyle = answers.stylePref || "modern";
-  selectedImage = getRandomImage(selectedStyle);
-}
-
+  if (predefinedImages[comboKey]) {
+    selectedImage = predefinedImages[comboKey];
+    quantities = predefinedQuantities[comboKey] || {};
+  } else {
+    const selectedStyle = answers.StylePref || "modern";
+    selectedImage = getRandomImage(selectedStyle);
+  }
 
   // Elements
   const customResultSection = document.getElementById("customResultSection");
@@ -158,7 +164,7 @@ if (predefinedImages[comboKey]) {
   const customBOMBody = document.getElementById("customBOMBody");
   const customTotal = document.getElementById("customTotal");
 
-  // Reset any previous
+  // Reset previous
   customBOMBody.innerHTML = "";
   customResultSection.style.display = "block";
   customResultImage.src = selectedImage;
@@ -166,58 +172,53 @@ if (predefinedImages[comboKey]) {
 
   let grandTotal = 0;
 
-  Object.entries(answers).forEach(([key, value]) => {
-    let qty = Math.floor(Math.random() * 10) + 1;
-    let pricePerItem = 0;
-    let qtyDisplay = qty;
-    let priceDisplay = "";
-    let totalDisplay = "";
-    let rowTotal = 0;
+Object.entries(answers).forEach(([key, value]) => {
+  let qty = 0;
+  let pricePerItem = 0;
+  let rowTotal = 0;
+  let qtyDisplay = "";
+  let priceDisplay = "";
+  let totalDisplay = "";
 
-    if (key === "stylePref") {
-      qtyDisplay = "-";
-      if (value === "modern") pricePerItem = 6000;
-      else if (value === "rustic") pricePerItem = 5500;
-      else if (value === "classic") pricePerItem = 5700;
-      else pricePerItem = 5000;
+  if (key.toLowerCase() === "stylepref") {
+    qtyDisplay = "-";
 
-      rowTotal = pricePerItem;
-      priceDisplay = `₹${pricePerItem.toLocaleString()}`;
-      totalDisplay = `₹${rowTotal.toLocaleString()}`;
-      grandTotal += rowTotal;
-    }
-    else if (key === "plants" && value === "none") {
-      qtyDisplay = priceDisplay = totalDisplay = "-";
-      rowTotal = 0;
-    }
-    else if (key === "plants") {
-      pricePerItem = value === "lots" ? 300 : 200;
-      rowTotal = qty * pricePerItem;
-      priceDisplay = `₹${pricePerItem.toLocaleString()}`;
-      totalDisplay = `₹${rowTotal.toLocaleString()}`;
-      grandTotal += rowTotal;
-    }
-    else if (key === "furniture") {
-      pricePerItem = value === "sofa" ? 7000 : value === "dining" ? 5000 : 4000;
-      rowTotal = qty * pricePerItem;
-      priceDisplay = `₹${pricePerItem.toLocaleString()}`;
-      totalDisplay = `₹${rowTotal.toLocaleString()}`;
-      grandTotal += rowTotal;
+    // Style price: random number >= 5000 (e.g., 5000–10000)
+    pricePerItem = Math.floor(Math.random() * (10000 - 5000 + 1)) + 5000;
+    rowTotal = pricePerItem; // quantity treated as 1
+    priceDisplay = `₹${pricePerItem.toLocaleString()}`;
+    totalDisplay = `₹${rowTotal.toLocaleString()}`;
+  } else {
+    qty = quantities[key.toLowerCase()] !== undefined ? quantities[key.toLowerCase()] : Math.floor(Math.random() * 10) + 1;
+
+    if (key.toLowerCase() === "furniture") {
+      pricePerItem = value.toLowerCase() === "sofa" ? 7000 : value.toLowerCase() === "dining" ? 5000 : 4000;
+    } else if (key.toLowerCase() === "plants") {
+      pricePerItem = value.toLowerCase() === "lots" ? 300 : 200;
     }
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${capitalize(key)}: ${capitalize(value)}</td>
-      <td>${qtyDisplay}</td>
-      <td>${priceDisplay}</td>
-      <td>${totalDisplay}</td>
-    `;
-    customBOMBody.appendChild(tr);
-  });
+    rowTotal = qty * pricePerItem;
+    qtyDisplay = qty;
+    priceDisplay = `₹${pricePerItem.toLocaleString()}`;
+    totalDisplay = `₹${rowTotal.toLocaleString()}`;
+    grandTotal += rowTotal;
+  }
+
+  const tr = document.createElement("tr");
+  tr.innerHTML = `
+    <td>${capitalize(key)}: ${capitalize(value)}</td>
+    <td>${qtyDisplay}</td>
+    <td>${priceDisplay}</td>
+    <td>${totalDisplay}</td>
+  `;
+  customBOMBody.appendChild(tr);
+});
+
+
 
   customTotal.textContent = `₹${grandTotal.toLocaleString()}`;
 
-  // 👉 Enable editing for custom BOM
+  // Enable editing
   makeQuantityEditable("customBOMBody", "customTotal");
 
   AOS.refresh();
@@ -244,7 +245,7 @@ document.addEventListener("scroll", () => {
     }
   });
 });
-
+ 
 // upload to decode
 const fileInput = document.getElementById("fileInput");
 const decodeBtn = document.getElementById("decodeBtn");
@@ -252,7 +253,7 @@ const decodedSection = document.getElementById("decodedSection");
 const decodedImagePreview = document.getElementById("decodedImagePreview");
 const decodedBOMBody = document.getElementById("decodedBOMBody");
 const decodedTotal = document.getElementById("decodedTotal");
-
+ 
 // Simulated detection catalog
 const possibleItems = {
   plant: { minPrice: 150, maxPrice: 450 },
@@ -263,7 +264,7 @@ const possibleItems = {
   rug: { minPrice: 1200, maxPrice: 3000 },
   tiles: { minPrice: 1000, maxPrice: 2500 }
 };
-
+ 
 // Simulated ML Detection
 // Predefined static data for specific uploaded images
 const staticBOMData = {
@@ -291,6 +292,33 @@ const staticBOMData = {
     "potted plants and creepers"
   ]
 };
+ 
+// Static quantity mapping for specific images
+const staticBOMQuantities = {
+  "images/uploadimage1.png": {
+    "lights": 4,
+    "Plants & Greenery": 10,
+    "Rug": 2,
+    "sofa with cushions": 2,
+    "coffee table": 2,
+    "wooden arm chair": 1,
+    "floor lamp": 2
+  },
+  "images/uploadimage2.jpeg": {
+    "plants": 3,
+    "furniture": 1,
+    "Wall Decor": 2,
+    "lights": 4,
+    "Flooring & Rugs": 2
+  },
+  "images/uploadimage3.png": {
+    "swing chair": 1,
+    "green grass carpet": 1,
+    "hanging pendant lamp": 2,
+    "lightings": 3,
+    "potted plants and creepers": 4
+  }
+};
 
 // Updated ML Detection function
 function detectItemsFromImage(filename) {
@@ -300,12 +328,12 @@ function detectItemsFromImage(filename) {
       return staticBOMData[key]; // return predefined static items
     }
   }
-
+ 
   // Existing random logic for other files
   const keys = Object.keys(possibleItems);
   const lower = filename.toLowerCase();
   const detected = [];
-
+ 
   if (lower.includes("plant") || lower.includes("green")) detected.push("plant");
   if (lower.includes("furniture") || lower.includes("chair") || lower.includes("sofa")) detected.push("furniture");
   if (lower.includes("grass") || lower.includes("lawn")) detected.push("grass");
@@ -316,46 +344,54 @@ function detectItemsFromImage(filename) {
   if (lower.includes("umbrella")) detected.push("umbrella");
   if (lower.includes("wall")) detected.push("wallDecor");
   if (lower.includes("water") || lower.includes("fountain")) detected.push("waterFeature");
-
+ 
   if (detected.length === 0) {
     const shuffled = [...keys].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 6);
   }
   return [...new Set(detected)].slice(0, 6);
 }
-
+ 
 // Decode button logic
 decodeBtn.addEventListener("click", () => {
   fileInput.click();
 });
-
+ 
 fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0];
   if (!file) return;
-  customResultSection.style.display = "none"; 
-
+  customResultSection.style.display = "none";
+ 
   const reader = new FileReader();
   reader.onload = function (event) {
     customResultSection.style.display = "none";
     decodedImagePreview.src = event.target.result;
     decodedSection.style.display = "block";
-
+ 
     // Smooth scroll to decoded section so user sees the result
 decodedSection.scrollIntoView({ behavior: "smooth", block: "start" });
-
+ 
     document.getElementById("bomTableContainer").style.display = "none";
     const generateBtn = document.getElementById("generateBOMBtn");
     generateBtn.disabled = false;
-
+ 
     const detectedItems = detectItemsFromImage(file.name);
-
+ 
   generateBtn.onclick = () => {
   decodedBOMBody.innerHTML = "";
   let total = 0;
+ 
+detectedItems.forEach(item => {
+  // Check if static quantity exists for this image and item
+  let qty;
+  const matchedImage = Object.keys(staticBOMQuantities).find(key => file.name.includes(key.split("/").pop()));
+  if (matchedImage && staticBOMQuantities[matchedImage][item] !== undefined) {
+    qty = staticBOMQuantities[matchedImage][item];
+  } else {
+    qty = Math.floor(Math.random() * 6) + 2; // fallback random quantity
+  }
 
-  detectedItems.forEach(item => {
-    const qty = Math.floor(Math.random() * 6) + 2;
-
+ 
     // Check if item exists in possibleItems, else assign a default random price
     let price = 0;
     if (possibleItems[item]) {
@@ -363,10 +399,10 @@ decodedSection.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
       price = Math.floor(Math.random() * (3000 - 500 + 1)) + 500; // default random price for static items
     }
-
+ 
     const totalItemPrice = qty * price;
     total += totalItemPrice;
-
+ 
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${capitalize(item)}</td>
@@ -376,107 +412,54 @@ decodedSection.scrollIntoView({ behavior: "smooth", block: "start" });
     `;
     decodedBOMBody.appendChild(row);
   });
-
+ 
   decodedTotal.textContent = `₹${total.toLocaleString()}`;
   document.getElementById("bomTableContainer").style.display = "block";
   generateBtn.disabled = true;
-
+ 
   // Enable editing for decoded BOM
   makeQuantityEditable("decodedBOMBody", "decodedTotal");
-
+ 
   AOS.refresh();
 };
-
+ 
   };
   reader.readAsDataURL(file);
 });
+ 
 
-// contact form
-const contactBtn = document.querySelector('a.btn.btn-success[data-aos="zoom-in"]'); 
-const contactOverlay = document.getElementById("contactOverlay");
-const closeContact = document.getElementById("closeContact");
-
-if (contactBtn) {
-  contactBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    contactOverlay.style.display = "flex";
-  });
-}
-
-if (closeContact) {
-  closeContact.addEventListener("click", () => {
-    contactOverlay.style.display = "none";
-  });
-}
-
-contactOverlay.addEventListener("click", (e) => {
-  if (e.target === contactOverlay) {
-    contactOverlay.style.display = "none";
-  }
-});
-
-// Handle Contact Form Submit
-const contactForm = document.getElementById("contactForm");
-
-if (contactForm) {
-  contactForm.addEventListener("submit", (e) => {
-    e.preventDefault(); // stop normal form submission
-
-    // Close overlay
-    contactOverlay.style.display = "none";
-
-    // Show SweetAlert success message
-    Swal.fire({
-      title: "Submitted Successfully!",
-      text: "Thanks for contacting us. We’ll get back to you soon.",
-      icon: "success",
-      confirmButtonText: "OK",
-      showClass: {
-        popup: "animate__animated animate__fadeInDown"
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp"
-      }
-    });
-
-    // Reset form fields
-    contactForm.reset();
-  });
-}
-
-
-// 🔹 Quantity Editable Function
-function makeQuantityEditable(tableBodyId, totalId) {
-  const tableBody = document.getElementById(tableBodyId);
+// ✅ Make quantity cells editable and update totals dynamically
+function makeQuantityEditable(tbodyId, totalId) {
+  const tbody = document.getElementById(tbodyId);
   const totalEl = document.getElementById(totalId);
+  if (!tbody || !totalEl) return;
 
-  if (!tableBody) return;
+  tbody.querySelectorAll("tr").forEach(row => {
+    const qtyCell = row.children[1]; // 2nd column → quantity
+    const priceCell = row.children[2];
+    const totalCell = row.children[3];
 
-  tableBody.querySelectorAll("td:nth-child(2)").forEach((cell) => {
-    if (cell.textContent.trim() === "-" || cell.querySelector("input")) return;
+    if (!qtyCell || qtyCell.textContent.trim() === "-" || qtyCell.querySelector("input")) return;
 
-    const oldValue = cell.textContent.trim();
-    cell.innerHTML = `<input type="number" min="0" value="${oldValue}" class="form-control form-control-sm text-center">`;
+    const initialQty = parseInt(qtyCell.textContent.trim()) || 0;
+    const price = parseInt(priceCell.textContent.replace(/[₹,]/g, "")) || 0;
 
-    const input = cell.querySelector("input");
+    // Convert qty cell into an editable input
+    qtyCell.innerHTML = `<input type="number" min="0" value="${initialQty}" style="width:70px;text-align:center;">`;
+
+    const input = qtyCell.querySelector("input");
     input.addEventListener("input", () => {
-      const row = cell.parentElement;
-      const qty = parseInt(input.value) || 0;
-
-      const priceCell = row.children[2];
-      const totalCell = row.children[3];
-
-      const price = parseInt(priceCell.textContent.replace(/[₹,]/g, "")) || 0;
-      const newRowTotal = qty * price;
-
+      const newQty = parseInt(input.value) || 0;
+      const newRowTotal = newQty * price;
       totalCell.textContent = `₹${newRowTotal.toLocaleString()}`;
 
-      let newGrand = 0;
-      tableBody.querySelectorAll("tr").forEach((r) => {
-        const val = parseInt(r.children[3].textContent.replace(/[₹,]/g, "")) || 0;
-        newGrand += val;
+      // Recalculate the overall total
+      let grandTotal = 0;
+      tbody.querySelectorAll("tr").forEach(r => {
+        const val = parseInt((r.children[3]?.textContent || "").replace(/[₹,]/g, ""));
+        if (!isNaN(val)) grandTotal += val;
       });
-      totalEl.textContent = `₹${newGrand.toLocaleString()}`;
+      totalEl.textContent = `₹${grandTotal.toLocaleString()}`;
     });
   });
 }

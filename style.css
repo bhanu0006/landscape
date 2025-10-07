@@ -72,21 +72,22 @@ a span {
   font-size: 3.5rem;
   font-weight: 650;
   margin-bottom: 20px;
-    background: linear-gradient(90deg, #5a4524, #725c3b, #997d4d); /* dark → base → light */
+     background: linear-gradient(90deg, #5a4524, #725c3b, #997d4d); /* dark → base → light */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-family: sans-serif;
 }
 
+
 .mb-2{
-  color:black !important;
+  color:#fff !important;
   font-weight: bold !important;
 }
 
 .hero-content p {
   font-size: 1.25rem;
   margin-bottom: 30px;
-  color: #6C6154; /* muted green, gives a natural touch without overpowering */
+  color: #6C6154; 
   font-family: sans-serif;
 }
 
@@ -484,77 +485,3 @@ p.subtitle {
 }
 
 
-/* contact form */
-/* Overlay background */
-.contact-popup {
-  display: none; /* hidden by default */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
-  z-index: 2000;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Contact form box */
-.contact-box {
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  max-width: 500px;
-  width: 90%;
-  position: relative;
-  animation: fadeIn 0.3s ease-in-out;
-  text-align: center;
-}
-
-
-
-/* Close button */
-.contact-close {
-  position: absolute;
-  top: 12px;
-  right: 18px;
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* Custom Result Image Styling */
-#customResultImage {
-  width: 100%;
-  max-width: 500px;   /* adjust as per your layout */
-  height: 350px;      /* fixed height */
-  object-fit: cover;  /* ensures image fills nicely */
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto;
-}
-
-#decodedImagePreview {
-    width: 100%;
-  max-width: 500px;   /* adjust as per your layout */
-  height: 350px;      /* fixed height */
-  object-fit: cover;  /* ensures image fills nicely */
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto;
-}
-
-.card-img-top{
-      width: 100%;
-  max-width: 500px;   /* adjust as per your layout */
-  height: 200px;      /* fixed height */
-  object-fit: cover;  /* ensures image fills nicely */
-  border-radius: 12px;
-  display: block;
-  margin: 0 auto;
-}
